@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<!-- Link tag for icon512_maskable.png -->
+<link rel="icon" type="image/png" sizes="512x512" href="icon512_maskable.png">
+
+<!-- Link tag for icon512_rounded.png -->
+<link rel="icon" type="image/png" sizes="512x512" href="icon512_rounded.png">
+
+<!-- Link tag for manifest.json -->
+<link rel="manifest" href="manifest.json">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Secret</title>
+	<style>body {
+	font-family: Arial, sans-serif;
+	background-color: black;
+}
+
+.container {
+	max-width: 600px;
+	margin: 50px auto;
+	padding: 20px;
+	background-color: #111;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+	text-align: center;
+	color: #fff;
+}
+
+.input {
+	margin-bottom: 20px;
+}
+
+.input label {
+	display: block;
+	margin-bottom: 5px;
+	color: #fff;
+}
+
+.input input {
+	width: 100%;
+	padding: 8px;
+	font-size: 16px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+
+.buttons {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 20px;
+}
+
+.buttons button {
+	padding: 10px 20px;
+	font-size: 16px;
+	color: #fff;
+	background-color: #007bff;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: background-color 0.3s;
+}
+
+.buttons button:hover {
+	background-color: #0056b3;
+}
+
+.output label {
+	display: block;
+	margin-bottom: 5px;
+	color: #fff;
+}
+
+.output textarea {
+	width: 100%;
+	padding: 8px;
+	font-size: 16px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	resize: vertical;
+}</style>
+</head>
+<body>
+	<div class="container">
+		<h1>Make a secret message!</h1>
+		<div class="input">
+			<label for="textInput">Enter text:</label>
+			<input type="text" id="textInput">
+			<label for="rAmount">Recursive cursive loops: (Enter '0' for none)</label>
+		<input id="rAmount"type="number" placeholder="Number...">
+		</div>
+		<div class="buttons">
+			<button onclick="Encode()">Encode</button>
+			<button onclick="Decode()">Decode</button>
+	
+	
+		</div>
+
+		<div class="output">
+			<label for="outputText">Output:</label>
+			<textarea id="outputText" rows="4" readonly></textarea>
+		</div>
+	</div>
+	<script>
+const patterns = [
+  ["6", "~^"],
+  ["0", "<"],
+  ["9", "~"],
+  ["4", "|"],
+  ["1", "_"],
+]
+
+function charToHex(char) {
+	return char.charCodeAt(0).toString(16).toUpperCase();
+}
+
+function stringToHex(str) {
+	let hex = "";
+	for (let i = 0; i < str.length; i++) {
+		hex += charToHex(str[i]);
+	}
+	patterns.forEach(pair => {
+		hex = hex.replaceAll(pair[0], pair[1]);
+	});
+	return hex;
+}
+
+function hexToChar(hex) {
+	return String.fromCharCode(parseInt(hex, 16));
+}
+
+function hexToString(hex) {
+	patterns.forEach(pair => {
+		hex = hex.replaceAll(pair[1], pair[0]);
+	});
+	let str = "";
+	for (let i = 0; i < hex.length; i += 2) {
+		const hexPair = hex.substr(i, 2);
+		str += hexToChar(hexPair);
+	}
+	return str;
+}
+
+function encodeText() {
+	const input = document.getElementById("textInput").value;
+	const hexOutput = stringToHex(input);
+	document.getElementById("outputText").value = hexOutput;
+}
+
+function decodeText() {
+	const input = document.getElementById("textInput").value;
+	const decodedOutput = hexToString(input);
+	document.getElementById("outputText").value = decodedOutput;
+}
+
+function recursiveEncode(text,stop,amount=0){
+	
+	
+	
+	if (amount > stop) {
+		return text;
+	} else {
+		return recursiveEncode(stringToHex(text),stop,amount+1)
+	}
+}
+
+function recursiveDecode(hex, stop, amount = 0) {
+	if (amount > stop) {
+		return hex;
+	} else {
+		return recursiveDecode(hexToString(hex), stop, amount + 1);
+	}
+}
+
+function Encode() {
+	const stop = parseInt(document.getElementById("rAmount").value) || 0;
+	const input = document.getElementById("textInput").value;
+	
+	document.getElementById("outputText").value = recursiveEncode(input,stop);
+}
+
+function Decode() {
+	const stop = parseInt(document.getElementById("rAmount").value) || 0;
+	const input = document.getElementById("textInput").value;
+	
+	document.getElementById("outputText").value = recursiveDecode(input,stop);
+}
+document.getElementById("outputText").addEventListener("click", ()=>{
+	navigator.clipboard.writeText(`${document.getElementById("outputText").value}`)
+	alert("Copied!")
+})
+
+</script>
+</body>
+</html>
